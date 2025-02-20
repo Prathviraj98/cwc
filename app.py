@@ -57,24 +57,24 @@ st.set_page_config(
 )
 
 # Input values
-span = st.number_input("Clear Span (Lc) in m", value=None)  # Default value for span set to None
-load = st.number_input("Service Live Load (w) in kN/m", value=None)  # Default value for load set to None
-support_width = st.number_input("Support Width (bs) in m", value=None)  # Default value for support width set to None
+span = st.number_input("Clear Span (Lc) in mm", value=None)  # Changed to mm
+load = st.number_input("Service Live Load (w) in N/mm", value=None)  # Changed to N/mm
+support_width = st.number_input("Support Width (bs) in mm", value=None)  # Changed to mm
 concrete_grade = st.selectbox("Concrete Grade", ["M20", "M25", "M30", "M35", "M40"], index=None)
 steel_grade = st.selectbox("Steel Grade", ["Fe415", "Fe500", "Fe600"], index=None)
 
 # Assumption values
-bar_diameter = st.number_input("Bar Diameter (φ) in mm", value=16)  # Default value for bar diameter
-cover = st.number_input("Concrete Cover (in mm)", value=25)  # Default value for cover
-effective_depth = st.number_input("Effective Depth (d) in mm", value=250)  # Default value for effective depth
+bar_diameter = st.number_input("Bar Diameter (φ) in mm", value=16)  # Remains in mm
+cover = st.number_input("Concrete Cover (in mm)", value=25)  # Remains in mm
+effective_depth = st.number_input("Effective Depth (d) in mm", value=250)  # Remains in mm
 
 # Calculate overall depth (D)
 overall_depth = effective_depth + cover + (bar_diameter / 2)  # mm
 
 # Calculate beam width (b) using the formula b = 1/3*d to 2/3*d
-beam_width_min = effective_depth / 3  # Minimum width
-beam_width_max = (2 * effective_depth) / 3  # Maximum width
-beam_width = (beam_width_min + beam_width_max) / 2  # Average width for design
+beam_width_min = effective_depth / 3  # Minimum width in mm
+beam_width_max = (2 * effective_depth) / 3  # Maximum width in mm
+beam_width = (beam_width_min + beam_width_max) / 2  # Average width for design in mm
 
 # Button to calculate
 if st.button("Calculate"):
@@ -85,9 +85,9 @@ if st.button("Calculate"):
 
         # Step 1: Given Data
         st.subheader("Step 1: Given Data")
-        st.write(f"- **Clear Span (Lc)** = {span:.2f} m")
-        st.write(f"- **Support Width (bs)** = {support_width * 1000:.0f} mm (each support)")
-        st.write(f"- **Service Live Load (w)** = {load:.2f} kN/m")
+        st.write(f"- **Clear Span (Lc)** = {span:.2f} mm")
+        st.write(f"- **Support Width (bs)** = {support_width:.0f} mm (each support)")
+        st.write(f"- **Service Live Load (w)** = {load:.2f} N/mm")
         st.write(f"- **Concrete Grade**: {concrete_grade} (fck = {concrete_strength} MPa)")
         st.write(f"- **Steel Grade**: {steel_grade} (fy = {steel_strength} MPa)")
         st.write(f"- **Beam Width (b)** = {beam_width:.2f} mm")
@@ -101,9 +101,9 @@ if st.button("Calculate"):
         st.write(f"#### Self-weight Calculation")
         st.write(f"Self-weight = 25 × (b × d) = 25 × ({beam_width / 1000:.2f} × {effective_depth:.2f}) = {self_weight:.2f} kN/m")
         st.write(f"Total Dead Load (DL) = Self-weight of beam = {self_weight:.2f} kN/m")
-        st.write(f"Live Load (LL) = {load:.2f} kN/m")
-        total_service_load = self_weight + load
-        st.write(f"Total Service Load (w_total) = w_DL + w_LL = {self_weight:.2f} + {load:.2f} = {total_service_load:.2f} kN/m")
+        st.write(f"Live Load (LL) = {load:.2f} N/mm")
+        total_service_load = self_weight + (load * 1000)  # Convert load from N/mm to kN/m
+        st.write(f"Total Service Load (w_total) = w_DL + w_LL = {self_weight:.2f} + {load * 1000:.2f} = {total_service_load:.2f} kN/m")
         factored_load = 1.5 * total_service_load
         st.write(f"Factored Load (for Design) = w_u = 1.5 × w_total = 1.5 × {total_service_load:.2f} = {factored_load:.2f} kN/m")
 
@@ -142,7 +142,7 @@ if st.button("Calculate"):
 
         # Step 6: Deflection Control Check
         st.subheader("Step 6: Deflection Control Check")
-        L_eff = span * 1000  # Convert to mm
+        L_eff = span  # Already in mm
         deflection_limit = L_eff / 20
         st.write(f"Deflection limit = L_eff / 20 = {L_eff:.2f} / 20 = {deflection_limit:.2f} mm")
         st.write("Deflection is within limits.")
